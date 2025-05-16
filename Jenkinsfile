@@ -23,14 +23,14 @@ pipeline {
                     // Deploy to web server
                     sshagent(['web-server-ssh']) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no ec2-user@<web-server-ip> "sudo mkdir -p ${deployPath}"
-                            scp -r *.html ec2-user@<web-server-ip>:/tmp/
-                            ssh -o StrictHostKeyChecking=no ec2-user@<web-server-ip> "sudo cp -r /tmp/*.html ${deployPath}/"
-                            ssh -o StrictHostKeyChecking=no ec2-user@<web-server-ip> "sudo chown -R apache:apache ${deployPath}"
+                            ssh -o StrictHostKeyChecking=no ec2-user@172.31.94.234 "sudo mkdir -p ${deployPath}"
+                            scp -r *.html ec2-user@172.31.94.234:/tmp/
+                            ssh -o StrictHostKeyChecking=no ec2-user@172.31.94.234 "sudo cp -r /tmp/*.html ${deployPath}/"
+                            ssh -o StrictHostKeyChecking=no ec2-user@172.31.94.234 "sudo chown -R apache:apache ${deployPath}"
                             
                             # Create Apache VirtualHost configuration for branches
                             if [ "${branch}" != "main" ]; then
-                                ssh -o StrictHostKeyChecking=no ec2-user@<web-server-ip> "sudo bash -c 'cat > /etc/httpd/conf.d/${branch}.conf << EOL
+                                ssh -o StrictHostKeyChecking=no ec2-user@172.31.94.234 "sudo bash -c 'cat > /etc/httpd/conf.d/${branch}.conf << EOL
 <VirtualHost *:80>
     ServerName ${branch}.example.com
     DocumentRoot ${deployPath}
@@ -40,7 +40,7 @@ pipeline {
     </Directory>
 </VirtualHost>
 EOL'"
-                                ssh -o StrictHostKeyChecking=no ec2-user@<web-server-ip> "sudo systemctl reload httpd"
+                                ssh -o StrictHostKeyChecking=no ec2-user@172.31.94.234 "sudo systemctl reload httpd"
                             fi
                         """
                     }
